@@ -1,0 +1,9 @@
+.item {
+  padding: 12px 24px;
+  list-style: none;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.todo-name {
+  margin-right: 15px;
+}
