@@ -35,7 +35,7 @@ vuex大致流程: 组件通过mapState,mapActions引入state和action => 触发a
 ```javascript
 const initState = {
   todos: [],
-  filter: 'SHOW_ALL
+  filter: 'SHOW_ALL'
 }
 
 function reducer(state = initState, action) {
