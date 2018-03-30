@@ -20,7 +20,9 @@ reducer也是一个函数，表示一个计算，它依据当前触发的action�
 
 ## 一个问题
 
-redux怎么依据action的type来决定调用哪个reducer  （答案就是遍历。。）
+redux怎么依据action的type来决定调用哪个reducer
+
+update：这个问题有点歧义，如果从最小的模块来说，就是利用switch case 或者 Key-value来调用reducer。而从宏观角度来说。redux并不能精确的知道哪个state会发生变化，所以它的策略就是每个模块都跑一遍。。
 
 ## vuex对比
 
