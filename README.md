@@ -123,7 +123,7 @@ function reducer(state, action) {
   }
 ```
 
-接下来，如何去掉switch case呢？我们可以写一个函数createReducer
+接下来，如何去掉switch case呢？我们可以写一个函数createReducer，这个函数有什么用？本质上，它也是返回一个reducer函数，这个函数会根据传入的type来调用相应的计算函数。其实就是把switch case变为用对象的key来选择对应计算函数
 
 ```javascript
   const addTodo(state, action) {
@@ -168,7 +168,7 @@ function reducer(state, action) {
 
 现在利用combineReducer
 
-```
+```javascript
 ...
 import { combineReducer } from 'redux'
 
@@ -178,24 +178,33 @@ const reducer = combineReducer({
 })
 ```
 
-想象一下，combineReducer可能干了什么？它最后应该返回一个Obj, 每个value应该计算后的值, 来个简易版的
+想象一下，combineReducer可能干了什么？它最后应该返回一个Reducer函数, 这个函数应该返回一个大的State对象，对象的每个value应该计算后的值。
+
+来个简易版的，注意reducer会有两个默认参数state, action，这个应该是createStore的时候传的
 
 ```
 /*
  * @params reducers [Object]
  */
 function combineReducer (reducers) {
-  const nextState = {}
+  return function (state, action) {
+    const nextState = {}
 
-  for (let key in reducers) {
-    nextState[key] = reducers[key]
+    for (let key in reducers) {
+      nextState[key] = reducers[key](state[key], action)
+    }
+
+    // 返回一个新state
+    return nextState;
   }
-
-  // 返回一个新state
-  return nextState
 }
 ```
 
-注意，reducer本质上就是一个计算state的函数，最后返回state。前面用switch case的意义就在于能根据不同的type来进行计算。而此时去掉switch case之后，就必须每个reducer都计算一次，最后返回一个大的state。这也是combineReducers干的事
+注意，reducer本质上就是一个计算state的函数，最后返回state。前面用switch case的意义就在于能根据不同的type来进行计算。而此时去掉switch case之后，就必须每个reducer都调用一次，因为框架不知道一个action会有多少state会改动。最后返回一个大的state。这也是combineReducers干的事。所以从性能上说，可能会略差，但是可维护性大大提升
 
 最近看一些react项目的时候，很多都是函数包函数，比如redux里，为了减少样板代码，写了很多生成函数。看的我头疼，首先不知道这个函数目的是什么，二是不知道它最后会变成什么东西。所以从头梳理一下来龙去脉可能会清晰一点
+
+总之，记住两点
+
+1. reducer本质上就是一个计算函数，最后返回state，(state, action) => state
+2. 代码怎么组织，比如如何根据type触发对应函数，用switch还是key-value，都可以，看个人而定
